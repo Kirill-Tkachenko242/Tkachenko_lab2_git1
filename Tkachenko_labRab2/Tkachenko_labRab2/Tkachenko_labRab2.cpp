@@ -67,28 +67,19 @@ void PrintCS(const CS& c)
 
 
 
-Pipe LoadPipe()
+Pipe LoadPipe(ifstream& fin)
 {
-    string pipe_word;
     Pipe s;
-    ifstream fin;
-    fin.open("data.txt", ios::in);
-    if (fin.is_open())
-    {
-        fin >> s.lenght;
-        fin >> s.diametr;
-        fin >> s.repair;
-        fin.close();
-    }
+
+    fin >> s.lenght;
+    fin >> s.diametr;
+    fin >> s.repair;
     return s;
 }
-CS LoadCS()
+CS LoadCS(ifstream& fin)
 {
     string cs_word;
-    Pipe s;
     CS c;
-    ifstream fin;
-    fin.open("data.txt", ios::in);
     if (fin.is_open())
     {
         while (fin >> cs_word) {
@@ -103,15 +94,11 @@ CS LoadCS()
         fin.close();
     }
     return c;
+
 }
 
 
-void Save(const Pipe& s, const CS& c)
-{
-    ofstream fout;
-    fout.open("data.txt", ios::out);
-    if (fout.is_open())
-    {
+void SavePipe(ofstream& fout, const Pipe& s) {
         if (s.lenght == 0) {
             fout << "" << endl;
         }
@@ -120,9 +107,10 @@ void Save(const Pipe& s, const CS& c)
                 << s.diametr << endl
                 << s.repair << endl;
         }
-    }
-    if (fout.is_open())
-    {
+}
+
+void SaveCS(ofstream& fout, const CS& c) {
+
         if (c.shop == 0) {
             fout << "" << endl;
         }
@@ -134,11 +122,7 @@ void Save(const Pipe& s, const CS& c)
                 << c.ef << endl
                 << c.s << endl;
         }
-        fout.close();
-    }
-
 }
-
 
 
 void EditPipe(Pipe& s)
@@ -227,16 +211,16 @@ Pipe& SelectPipe(vector<Pipe>& g)
 {
     cout << "Enter index: ";
     unsigned int index = GetCorrectNumber<unsigned int>(1u, g.size());
-    return g[index];
+    return g[index-1];
 }
-/*
+
 CS& SelectCS(vector<CS>& g)
 {
     cout << "Enter index ";
-    unsigned int index = GetCorrectNumber<unsigned int>(0u, g.size());
-    return g[index];
+    unsigned int index = GetCorrectNumber<unsigned int>(1u, g.size());
+    return g[index-1];
 }
-*/
+
 int main()
 {
     vector <Pipe> group;
@@ -267,27 +251,66 @@ int main()
         case 3:
         {
             /*
-            if (st.lenght == 0 || st.diametr == 0) {
+            Pipe st;
+            CS cs;
+            if (st.diametr == 0) {
                 cout << "No Pipe" << endl;
             }
-            else { cout << st << endl; }
-            if (cs.name == "NULL" || cs.shop == 0 || cs.shopr == 0) { cout << "No CS" << endl; }
-            else { cout << cs << endl; }
+            else { cout << SelectPipe(group) << endl; }
+            if (cs.shopr == 0) { cout << "No CS" << endl; }
+            else { cout << SelectCS(groupc) << endl; }
             break;
             */
             cout << SelectPipe(group) << endl;
-            //cout << SelectCS(groupc) << endl;
+            cout << SelectCS(groupc) << endl;
             break;
         }
         case 4:
         {
-            //Save(st, cs);
+            ofstream fout;
+            fout.open("data.txt", ios::out);
+            if (fout.is_open())
+            {
+                fout << group.size() << endl;
+                for (Pipe st : group)
+                    SavePipe(fout, st);
+                //fout.close();
+            }
+            
+            //fout.open("data.txt", ios::out);
+            if (fout.is_open())
+            {
+                fout << groupc.size() << endl;
+                for (CS cs : groupc)
+                    SaveCS(fout, cs);
+                fout.close();
+            }
+            
             break;
         }
         case 5:
         {
-            //st = LoadPipe();
-            //cs = LoadCS();
+            ifstream fin;
+            fin.open("data.txt", ios::in);
+            if (fin.is_open())
+            {
+                int count;
+                fin >> count;
+                while (count--)
+                    group.push_back(LoadPipe(fin));
+                fin.close();
+                
+            }
+            
+            fin.open("data.txt", ios::in);
+            if (fin.is_open())
+            {
+                int count;
+                fin >> count;
+                while (count--)
+                    groupc.push_back(LoadCS(fin));
+                fin.close();
+            }
             break;
         }
         case 6:
@@ -297,7 +320,7 @@ int main()
         }
         case 7:
         {
-            //EditCS(SelectCS(groupc));
+            EditCS(SelectCS(groupc));
             break;
         }
         case 0:
